@@ -2,6 +2,26 @@
 <!DOCTYPE HTML>  
 <html>
 <head>
+<style>
+#bor1 {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 50%;
+}
+
+#bor1 td, #bor1 th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#bor1 th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
 </head>
 <body>  
 
@@ -24,6 +44,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ages = "";
   } else {
     $ages = test_input($_POST["ages"]);
+  }
+  if (empty($_POST["Options"])) {
+    $Options = "";
+  } else {
+    $Options = test_input($_POST["ages"]);
   }
 
 }
@@ -68,6 +93,7 @@ if($conn === false){
 $name =  $_REQUEST['name'];
 $mobil = $_REQUEST['mobil'];
 $ages =  $_REQUEST['ages'];
+    
 
 $sql = "INSERT INTO info VALUES ('$name', 
             '$mobil','$ages')";
@@ -84,5 +110,41 @@ mysqli_close($conn);
 
 ?>
 
+<table id="bor1">
+  <tr>
+      <th>Name</th>
+      <th>Mobile</th>
+      <th>Age</th>
+      <th>Operations</th>
+  </tr>
+  <?php
+
+  $conn = mysqli_connect("localhost","root","","firstdata");
+
+  $sql = "SELECT name,mobile,age,Options from info";
+  $result =$conn-> query($sql);
+  if($result-> num_rows > 0){
+    while($row = $result-> fetch_assoc()){
+          echo "
+          <tr>
+          <td>" .$row['name'] . "</td>
+          <td>". $row['mobile']. "</td>
+          <td>". $row['age']. "</td>
+          <td><a href='delete.php?nm=$row[name]'>Delete</td>
+          </tr>
+          ";
+    }
+
+    echo  "</table>";
+  }
+  else {
+    echo "0 result";
+  }
+
+  $conn-> close();
+  ?>
+
+
+</table>
 </body>
 </html>
