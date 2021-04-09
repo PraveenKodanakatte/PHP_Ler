@@ -9,7 +9,7 @@
   width: 50%;
 }
 
-#bor1 td, #bor1 th {
+#bor1 td, #bor1 th {  
   border: 1px solid #ddd;
   padding: 8px;
 }
@@ -43,26 +43,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (empty($_POST["ages"])) {
     $ages = "";
   } else {
-    $ages = test_input($_POST["ages"]);
+    $ages = test_input($_POST["ages"]);   
   }
-  if (empty($_POST["Options"])) {
-    $Options = "";
-  } else {
-    $Options = test_input($_POST["ages"]);
-  }
-
 }
+
 
 function test_input($data) {
   $data = trim($data);
   $data = stripslashes($data);
   $data = htmlspecialchars($data);
-  return $data;
+  return $data; 
 }
 ?>
-
-
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> 
+<input type="hidden" name="id" value="<?php echo $id;?>">
   Name: <input type="text" name="name" value="<?php echo $name;?>">
   <br><br>
   Mobile: <input type="number" name="mobil" value="<?php echo $mobil;?>">
@@ -73,45 +67,26 @@ function test_input($data) {
 </form>
 
 <?php
-echo "<h2>Your Input:</h2>";
-echo $name;
-echo "<br>";
-echo $mobil;
-echo "<br>";
-echo $ages;
-echo "<br>";
-?>
-
-<?php
 $conn = mysqli_connect("localhost", "root", "", "firstdata");
-
-if($conn === false){
-    die("ERROR: Could not connect. " 
-        . mysqli_connect_error());
+if(isset($_POST['submit']))
+{    
+    $id=$_POST['id'];
+     $name = $_POST['name'];
+     $mobil = $_POST['mobil'];
+     $ages = $_POST['ages'];
+     $sql = "INSERT INTO info (Name,Mobile,Age)VALUES ('$name','$mobil','$ages')";
+     if (mysqli_query($conn, $sql)) {
+        echo "New record has been added successfully !";
+     } else {
+        echo "Error: " . $sql . ":-" . mysqli_error($conn);
+     }
+     mysqli_close($conn);   
 }
-
-$name =  $_REQUEST['name'];
-$mobil = $_REQUEST['mobil'];
-$ages =  $_REQUEST['ages'];
-    
-
-$sql = "INSERT INTO info VALUES ('$name', 
-            '$mobil','$ages')";
-
-if(mysqli_query($conn, $sql)){
-    echo ""; 
-
-} else{
-    echo "ERROR: Hush! Sorry $sql. " 
-        . mysqli_error($conn);
-}
-  
-mysqli_close($conn);
-
 ?>
 
 <table id="bor1">
   <tr>
+      <th>S_no</th?>
       <th>Name</th>
       <th>Mobile</th>
       <th>Age</th>
@@ -120,31 +95,38 @@ mysqli_close($conn);
   <?php
 
   $conn = mysqli_connect("localhost","root","","firstdata");
-
-  $sql = "SELECT name,mobile,age,Options from info";
+  $sql = "SELECT id,Name,Mobile,Age from info";
   $result =$conn-> query($sql);
-  if($result-> num_rows > 0){
+  if($result-> num_rows > 0){ $i=1;
     while($row = $result-> fetch_assoc()){
-          echo "
-          <tr>
-          <td>" .$row['name'] . "</td>
-          <td>". $row['mobile']. "</td>
-          <td>". $row['age']. "</td>
-          <td><a href='delete.php?nm=$row[name]'>Delete</td>
+      
+        echo "
+          <tr>  
+          <td>". $i++."</td>
+          <td>" .$row['Name'] . "</td>
+          <td>". $row['Mobile']. "</td>
+          <td>". $row['Age']. "</td>
+          <td><a href='Simple.php?nm=$row[id]'>Delete</td>
           </tr>
           ";
     }
+  
+    $conn = mysqli_connect("localhost","root","","firstdata");
+    $row=$_GET['nm'];
+
+    $query="DELETE FROM info WHERE id =$row";
+
+    $data=mysqli_query($conn,$query);
 
     echo  "</table>";
   }
   else {
     echo "0 result";
   }
+  $conn-> close();  
+?>
+  </table>
+  
 
-  $conn-> close();
-  ?>
-
-
-</table>
 </body>
 </html>
