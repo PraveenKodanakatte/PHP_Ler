@@ -20,6 +20,7 @@
   text-align: left;
   background-color: #4CAF50;
   color: white;
+
 }
 </style>
 </head>
@@ -45,6 +46,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $ages = test_input($_POST["ages"]);   
   }
+  if (empty($_POST["comment"])) {
+    $comment = "";
+  } else {
+    $comment = test_input($_POST["comment"]);
+  }
+
+  if (empty($_POST["gender"])) {
+    $genderErr = "Gender is required";
+  } else {
+    $gender = test_input($_POST["gender"]);
+  }
+  if (empty($_POST["city"])) {
+    $cityErr = "City is required";
+  } else {
+    $city = test_input($_POST["city"]);
+  }
+  if (empty($_POST["comment"])) {
+    $commentErr = "comment is required";
+  } else {
+    $comment = test_input($_POST["comment"]);
+  }
+  if (empty($_POST["hobbies"])) {
+    $hobbiesErr = "hobbies is required";
+  } else {
+    $hobbies = test_input($_POST["hobbies"]);
+  }
 }
 
 
@@ -55,7 +82,7 @@ function test_input($data) {
   return $data; 
 }
 ?>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> 
+<form  method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>"> 
 <input type="hidden" name="id" value="<?php echo $id;?>">
   Name: <input type="text" name="name" value="<?php echo $name;?>">
   <br><br>
@@ -63,18 +90,42 @@ function test_input($data) {
   <br><br>
   Age: <input type="text" name="ages" value="<?php echo $ages;?>">
   <br><br>
-  <input type="submit" name="submit" value="Submit">  
+  
+  Gender:
+  <input type="radio" name="gender" <?php if (isset($gender) && $gender=="female") echo "checked";?> value="female">Female
+  <input type="radio" name="gender" <?php if (isset($gender) && $gender=="male") echo "checked";?> value="male">Male
+  <br><br>
+  <label for="city">Choose a City:</label>
+  <select name="city" id="city">
+    <option value="Shivmoga">Shivmoga</option>
+    <option value="Sagara">Sagara</option>
+    <option value="Soraba">Soraba</option>
+    <option value="Kodanakatte">Kodanakatte</option>
+  </select><br><br>
+  Comment: <textarea name="comment" rows="5" cols="40"><?php echo $comment;?></textarea><br>
+<br>
+  Hobbies:<input type="checkbox" id="hobbies1" name="hobbies" value="Playing Cricket">
+  <label for="hobbies"> I play cricket</label><br>
+  <input type="checkbox" id="hobbies2" name="hobbies" value="Football">
+  <label for="hobbies"> I play football</label><br>
+  <input type="checkbox" id="hobbies3" name="hobbies" value="Movies">
+  <label for="hobbies"> I watch Movies</label><br><br>
+  <br><input type="submit" name="submit" value="Submit">  
 </form>
 
 <?php
 $conn = mysqli_connect("localhost", "root", "", "firstdata");
 if(isset($_POST['submit']))
 {    
-    $id=$_POST['id'];
+     $id=$_POST['id'];
      $name = $_POST['name'];
      $mobil = $_POST['mobil'];
      $ages = $_POST['ages'];
-     $sql = "INSERT INTO info (Name,Mobile,Age)VALUES ('$name','$mobil','$ages')";
+     $gender=$_POST['gender'];
+     $city=$_POST['city'];
+     $comment=$_POST['comment'];
+     $hobbies=$_POST['hobbies'];
+   $sql = "INSERT INTO info (Name,Mobile,Age,gender,city,comment,hobbies)VALUES ('$name','$mobil','$ages','$gender','$city','$comment','$hobbies')";
      if (mysqli_query($conn, $sql)) {
         echo "New record has been added successfully !";
      } else {
@@ -90,12 +141,17 @@ if(isset($_POST['submit']))
       <th>Name</th>
       <th>Mobile</th>
       <th>Age</th>
-      <th>Operations</th>
+      <th>Gender</th>
+      <th>city</th>
+      <th>comment</th>
+      <th>hobbies</th>
+      <th colspan="2">Operations</th>
+      
   </tr>
   <?php
 
   $conn = mysqli_connect("localhost","root","","firstdata");
-  $sql = "SELECT id,Name,Mobile,Age from info";
+  $sql = "SELECT id,Name,Mobile,Age,gender,city,comment,hobbies from info";
   $result =$conn-> query($sql);
   if($result-> num_rows > 0){ $i=1;
     while($row = $result-> fetch_assoc()){
@@ -106,7 +162,12 @@ if(isset($_POST['submit']))
           <td>" .$row['Name'] . "</td>
           <td>". $row['Mobile']. "</td>
           <td>". $row['Age']. "</td>
+          <td>". $row['gender']. "</td>
+          <td>". $row['city']. "</td>
+          <td>". $row['comment']. "</td>
+          <td>". $row['hobbies']. "</td>
           <td><a href='Simple.php?nm=$row[id]'>Delete</td>
+          <td><a href='update.php?up=$row[id]&fn=$row[Name]&Mb=$row[Mobile]&Ag=$row[Age]'>edit</td>
           </tr>
           ";
     }
@@ -123,10 +184,12 @@ if(isset($_POST['submit']))
   else {
     echo "0 result";
   }
-  $conn-> close();  
+
+  $conn-> close(); 
+  
 ?>
+
   </table>
   
-
 </body>
 </html>
