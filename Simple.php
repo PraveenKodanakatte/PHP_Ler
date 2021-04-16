@@ -15,7 +15,7 @@
 }
 
 #bor1 th {
-  padding-top: 12px;
+  padding-top: 12px;          
   padding-bottom: 12px;
   text-align: left;
   background-color: #4CAF50;
@@ -27,7 +27,7 @@
 <body>  
 
 <?php
-
+error_reporting(E_ALL ^ E_WARNING);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (empty($_POST["name"])) {
       $name="";
@@ -86,7 +86,7 @@ function test_input($data) {
 <input type="hidden" name="id" value="<?php echo $id;?>">
   Name: <input type="text" name="name" value="<?php echo $name;?>">
   <br><br>
-  Mobile: <input type="number" name="mobil" value="<?php echo $mobil;?>">
+  mobile: <input type="number" name="mobil" value="<?php echo $mobil;?>">
   <br><br>
   Age: <input type="text" name="ages" value="<?php echo $ages;?>">
   <br><br>
@@ -104,30 +104,33 @@ function test_input($data) {
   </select><br><br>
   Comment: <textarea name="comment" rows="5" cols="40"><?php echo $comment;?></textarea><br>
 <br>
-  Hobbies:<input type="checkbox" id="hobbies1" name="hobbies" value="Playing Cricket">
+  Hobbies:<input type="checkbox" id="hobbies1" name="hobbies" value="Cricket">
   <label for="hobbies"> I play cricket</label><br>
-  <input type="checkbox" id="hobbies2" name="hobbies" value="Football">
+  <input type="checkbox" id="hobbies1" name="hobbies" value="Football">
   <label for="hobbies"> I play football</label><br>
-  <input type="checkbox" id="hobbies3" name="hobbies" value="Movies">
+  <input type="checkbox" id="hobbies1" name="hobbies" value="Movies">
   <label for="hobbies"> I watch Movies</label><br><br>
   <br><input type="submit" name="submit" value="Submit">  
+  <input type="submit" name="update" value="update">  
+
 </form>
 
 <?php
 $conn = mysqli_connect("localhost", "root", "", "firstdata");
+
 if(isset($_POST['submit']))
 {    
      $id=$_POST['id'];
      $name = $_POST['name'];
      $mobil = $_POST['mobil'];
      $ages = $_POST['ages'];
-     $gender=$_POST['gender'];
+     $gender=$_POST['gender']; 
      $city=$_POST['city'];
      $comment=$_POST['comment'];
      $hobbies=$_POST['hobbies'];
    $sql = "INSERT INTO info (Name,Mobile,Age,gender,city,comment,hobbies)VALUES ('$name','$mobil','$ages','$gender','$city','$comment','$hobbies')";
      if (mysqli_query($conn, $sql)) {
-        echo "New record has been added successfully !";
+      echo '<script>alert("Record added Successfully")</script>';
      } else {
         echo "Error: " . $sql . ":-" . mysqli_error($conn);
      }
@@ -167,19 +170,35 @@ if(isset($_POST['submit']))
           <td>". $row['comment']. "</td>
           <td>". $row['hobbies']. "</td>
           <td><a href='Simple.php?nm=$row[id]'>Delete</td>
-          <td><a href='update.php?up=$row[id]&fn=$row[Name]&Mb=$row[Mobile]&Ag=$row[Age]'>edit</td>
+          <td><a href='Simple.php?up=$row[id]&fn=$row[Name]&Mb=$row[Mobile]&Ag=$row[Age]'>edit</td>
           </tr>
           ";
     }
   
     $conn = mysqli_connect("localhost","root","","firstdata");
-    $row=$_GET['nm'];
+    $row=$_GET['nm'];   
 
     $query="DELETE FROM info WHERE id =$row";
 
     $data=mysqli_query($conn,$query);
 
-    echo  "</table>";
+   
+    $row=$_GET['up'];  
+    $name = $_GET['name'];
+    $mobil =  $_GET['mobil'];
+    $ages =  $_GET['ages'];
+
+    if($_GET['update'])
+{
+    $row=$_GET['id'];
+    $Name= $_GET['Name'];
+    $Mobile= $_GET['Mobile'];
+    $Age= $_GET['Age'];
+
+    $query = "UPDATE info SET Name='".$Name."',Mobile='".$Mobile."',Age='".$Age."' WHERE id ='$row'";
+    $data=mysqli_query($conn,$query);
+}
+ echo  "</table>";
   }
   else {
     echo "0 result";
@@ -189,7 +208,7 @@ if(isset($_POST['submit']))
   
 ?>
 
-  </table>
-  
+</table>
+
 </body>
 </html>
