@@ -7,4 +7,4 @@ if(!$db)
     die("Connection failed: " . mysqli_connect_error());
 }
 
-?>//connection destroid
+?>
