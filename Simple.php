@@ -182,7 +182,7 @@
             </tr>
             ";
       }
-    
+    // connection build
       $conn = mysqli_connect("localhost","root","","firstdata");
       $row=$_GET['nm'];   
 
